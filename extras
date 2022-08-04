@@ -13,3 +13,10 @@ def add_shifted_features_for_n_shifts(the_df, features, n_max):
             print(n)
             the_df = add_shifted_feature(the_df, feature, n)
     return the_df
+
+# Change in utils
+def get_features_time_dependence(the_df):
+    is_fixed_features_df = (the_df.groupby(index_cols)[features_orig].nunique(dropna=False) <= 2).all()
+    the_time_fixed_features = is_fixed_features_df[is_fixed_features_df==True].index
+    the_time_variant_features = is_fixed_features_df[is_fixed_features_df==False].index
+    return the_time_fixed_features, the_time_variant_features
