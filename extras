@@ -1,4 +1,3 @@
-
 def get_features_time_dependence(the_df):
     is_fixed_features_df = (the_df.groupby(index_cols)[features_orig].nunique(dropna=False) <= 2).all()
     the_time_fixed_features = is_fixed_features_df[is_fixed_features_df==True].index
@@ -9,7 +8,8 @@ def add_shifted_feature(the_df, feature, n):
     shifted_feature = feature+"_shift_"+str(n)
     the_df[shifted_feature] = the_df.groupby(['id'])[feature].shift(n).values
     the_df[shifted_feature] = the_df.groupby(['id'])[shifted_feature].bfill().values
-    the_df[shifted_feature] = the_df.groupby(['id'])[shifted_feature].fillna(the_df[feature]).values
+    the_df[shifted_feature] = the_df[shifted_feature].fillna(the_df[feature].add_suffix("_shift_"+str(n)))
+    #print(the_df[shifted_feature].isna().sum().sum())
     return the_df
 
 # Change in utils
