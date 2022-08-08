@@ -18,3 +18,18 @@ def add_shifted_features_for_n_shifts(the_df, features, n_max):
         print(n)
         the_df = add_shifted_feature(the_df, features, n)
     return the_df
+
+def add_feature_rolling_n_aggregators(the_df, groupby_col, feature, n, std_fillna_val=0):
+    aggregated_features = data.groupby(groupby_col)[feature].rolling(n, min_periods=0).agg(['min','max','mean','std']).fillna(std_fillna_val).reset_index(drop=True).drop(columns='level_1', errors='ignore')
+    the_df = pd.concat([data,aggregated_features],axis=1)
+    return the_df
+
+def add_aggregated_features_for_n_rollings(the_df, groupby_col, features, n_max, std_fillna_val=0):
+    for n in np.arange(2, n_max)+1:
+        print(n)
+        the_df = add_feature_rolling_n_aggregators(the_df, groupby_col, features, n, std_fillna_val)
+    return the_df
+    
+# for add_aggregated:
+time_variant_features_numeric = df[time_variant_features].describe().columns
+features = [col for col in time_variant_features_numeric if not 'year' in col if not 'mean' in col if not 'pct_change' in col if not 'cumsum' in col if not 'encoded' in col]
