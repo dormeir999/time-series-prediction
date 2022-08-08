@@ -20,12 +20,18 @@ def add_shifted_features_for_n_shifts(the_df, features, n_max):
     return the_df
 
 def add_feature_rolling_n_aggregators(the_df, groupby_col, feature, n, std_fillna_val=0):
-    aggregated_features = data.groupby(groupby_col)[feature].rolling(n, min_periods=0).agg(['min','max','mean','std']).fillna(std_fillna_val).reset_index(drop=True).drop(columns='level_1', errors='ignore')
+    # calc rolling
+    aggregated_features = the_df.groupby(groupby_col)[feature].rolling(n, min_periods=0).agg(['min','max','mean','std']).fillna(std_fillna_val).reset_index(drop=True).drop(columns='level_1', errors='ignore')
+    # col names formatting
+    aggregated_features_cols = aggregated_features.columns.to_frame()
+    aggregated_features_cols[0] = aggregated_features_cols[0] + "_rolling_" + str(n) + "_" + aggregated_features_cols[1]
+    aggregated_features.columns = aggregated_features_cols[0]
+    # concat
     the_df = pd.concat([data,aggregated_features],axis=1)
     return the_df
 
 def add_aggregated_features_for_n_rollings(the_df, groupby_col, features, n_max, std_fillna_val=0):
-    for n in np.arange(2, n_max)+1:
+    for n in np.arange(1, n_max)+1:
         print(n)
         the_df = add_feature_rolling_n_aggregators(the_df, groupby_col, features, n, std_fillna_val)
     return the_df
