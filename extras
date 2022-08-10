@@ -39,3 +39,19 @@ def add_aggregated_features_for_n_rollings(the_df, groupby_col, features, n_max,
 # for add_aggregated:
 time_variant_features_numeric = df[time_variant_features].describe().columns
 features = [col for col in time_variant_features_numeric if not 'year' in col if not 'mean' in col if not 'pct_change' in col if not 'cumsum' in col if not 'encoded' in col]
+
+
+def linear_transformations(the_df, features):
+    # Quadratic model
+    temp = np.square(data[features]).add_suffix("_squared")
+    the_df = pd.concat([the_df, temp], axis=1)
+    # Quadratic square model
+    temp = np.sqrt(np.abs(the_df[features])).add_suffix("_root_squared")
+    the_df = pd.concat([the_df, temp], axis=1)
+    # Reciprocal model
+    temp = (1/(np.abs(the_df[features])+1)).add_suffix("_inversed")
+    the_df = pd.concat([the_df, temp], axis=1)
+    # logarithmic smoothing
+    temp = np.log(np.abs(the_df[features])+0.001).add_suffix("_log")
+    the_df = pd.concat([the_df, temp], axis=1)
+    return the_df
