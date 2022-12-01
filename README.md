@@ -1,1 +1,2 @@
-"# time-series-prediction" 
+This project is yet to be finished, but it contains generalized functions for making classic models on time series data.
+The notebook has some example that might help understand those functions.
